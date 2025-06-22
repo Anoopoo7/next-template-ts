@@ -1,10 +1,15 @@
 'use server';
 
-import { IPDPVariant, IResponse } from '@/common/lib/types';
+import {
+  IPage,
+  IPDPVariant,
+  IPDPVariantResponse,
+  IResponse,
+} from '@/common/lib/types';
 
 export const getVariantDetailsByUrl = async (
   variantUrl: string
-): Promise<IResponse<IPDPVariant>> => {
+): Promise<IResponse<IPDPVariantResponse>> => {
   // const cookieStore = await cookies();
   const url = new URL(
     `/api/variants/url?url=${variantUrl}`,
@@ -31,6 +36,38 @@ export const getVariantDetailsByUrl = async (
     return {
       success: false,
       message: data?.message || 'Failed to fetch variant',
+    };
+  });
+};
+
+export const getAllVariantsByProductId = async (
+  id: string,
+  page: number = 0
+): Promise<IResponse<IPage<IPDPVariant>>> => {
+  const url = new URL(
+    `/api/variants/productId/${id}/search?page=${page}`,
+    process.env.NEXT_PUBLIC_API_BASE_URL
+  );
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.json().then((data) => {
+    //   handleError(data);
+    if (data?.success) {
+      return {
+        success: true,
+        data: data.data,
+        message: 'variants fetched successfully',
+      };
+    }
+    return {
+      success: false,
+      message: data?.message || 'Failed to fetch variants',
     };
   });
 };

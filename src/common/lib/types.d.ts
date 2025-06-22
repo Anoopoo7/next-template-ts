@@ -25,6 +25,16 @@ export interface IResponse<T> {
   data?: T;
 }
 
+export interface IPage<T> {
+  hits: T[];
+  totalHitsCount: number;
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
 export interface IImageItem {
   type: string;
   defaultSrc: string;
@@ -89,6 +99,9 @@ export interface IPDPVariant {
   medias: IImageItem[];
   attributes: IAttribute;
   active: boolean;
+}
+
+export interface IPDPVariantResponse extends IPDPVariant {
   productInfo: IProduct;
   prices: IPrice;
   productType: IProductType;
@@ -97,4 +110,16 @@ export interface IPDPVariant {
 export interface IModule {
   resourceId: string;
   data: string;
+}
+
+export interface IPDPVariantOptionItem {
+  url: string;
+  name: string;
+  media: IImageItem;
+  active: boolean;
+}
+
+export interface IPDPVariantOptions {
+  hasMore: boolean;
+  options: IPDPVariantOptionItem[];
 }

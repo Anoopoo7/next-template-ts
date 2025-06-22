@@ -1,57 +1,21 @@
 'use client';
 
-import { Dispatch, FC, SetStateAction, useState } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
-import { Radio, RadioGroup } from '@headlessui/react';
 import Image from 'next/image';
-import { IImageItem, IPrice } from '@/common/lib/types';
+import {
+  IImageItem,
+  IPDPVariantOptionItem,
+  IPDPVariantOptions,
+  IPrice,
+} from '@/common/lib/types';
+import Link from 'next/link';
 
 const product = {
-  name: 'Basic Tee 6-Pack',
-  price: '$192',
-  href: '#',
   breadcrumbs: [
     { id: 1, name: 'Men', href: '#' },
     { id: 2, name: 'Clothing', href: '#' },
   ],
-  images: [
-    {
-      src: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-secondary-product-shot.jpg',
-      alt: 'Two each of gray, white, and black shirts laying flat.',
-    },
-    {
-      src: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-tertiary-product-shot-01.jpg',
-      alt: 'Model wearing plain black basic tee.',
-    },
-    {
-      src: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-tertiary-product-shot-02.jpg',
-      alt: 'Model wearing plain gray basic tee.',
-    },
-    {
-      src: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-featured-product-shot.jpg',
-      alt: 'Model wearing plain white basic tee.',
-    },
-  ],
-  sizes: [
-    { name: 'XXS', inStock: false },
-    { name: 'XS', inStock: true },
-    { name: 'S', inStock: true },
-    { name: 'M', inStock: true },
-    { name: 'L', inStock: true },
-    { name: 'XL', inStock: true },
-    { name: '2XL', inStock: true },
-    { name: '3XL', inStock: true },
-  ],
-  description:
-    'The Basic Tee 6-Pack allows you to fully express your vibrant personality with three grayscale options. Feeling adventurous? Put on a heather gray tee. Want to be a trendsetter? Try our exclusive colorway: "Black". Need to add an extra pop of color to your outfit? Our white tee has you covered.',
-  highlights: [
-    'Hand cut and sewn locally',
-    'Dyed with our proprietary colors',
-    'Pre-washed & pre-shrunk',
-    'Ultra-soft 100% cotton',
-  ],
-  details:
-    'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
 };
 const reviews = { href: '#', average: 4, totalCount: 117 };
 
@@ -65,6 +29,7 @@ interface ProductOverviewProps {
   gallery: IImageItem | null;
   prices?: IPrice;
   variantName?: string;
+  productVariantOptions?: IPDPVariantOptions;
   setGallery: Dispatch<SetStateAction<IImageItem | null>>;
 }
 
@@ -74,10 +39,9 @@ const ProductOverviewComponent: FC<ProductOverviewProps> = ({
   productName,
   prices,
   variantName,
+  productVariantOptions,
   setGallery,
 }) => {
-  const [selectedSize, setSelectedSize] = useState(product.sizes[2]);
-
   return (
     <div className='bg-white'>
       <div className='pt-6'>
@@ -108,7 +72,7 @@ const ProductOverviewComponent: FC<ProductOverviewProps> = ({
                 </div>
               </li>
             ))}
-            <li className='text-sm'>
+            {/* <li className='text-sm'>
               <a
                 href={product.href}
                 aria-current='page'
@@ -116,7 +80,7 @@ const ProductOverviewComponent: FC<ProductOverviewProps> = ({
               >
                 {product.name} {variantName}
               </a>
-            </li>
+            </li> */}
           </ol>
         </nav>
 
@@ -197,12 +161,12 @@ const ProductOverviewComponent: FC<ProductOverviewProps> = ({
             <h2 className='sr-only'>Product information</h2>
             <p className='text-3xl tracking-tight text-gray-900'>
               {prices?.salesPrice === prices?.finalPrice ? (
-              `$ ${prices?.finalPrice}.00`
+                `$ ${prices?.finalPrice}.00`
               ) : (
-              <>
-                <span className='text-3xl tracking-tight font-bold text-green-900'>{`$ ${prices?.finalPrice}.00`}</span>
-                <small className='text-xl text-gray-400 line-through mx-3'>{`$ ${prices?.salesPrice}.00`}</small>{' '}
-              </>
+                <>
+                  <span className='text-3xl tracking-tight font-bold text-green-900'>{`$ ${prices?.finalPrice}.00`}</span>
+                  <small className='text-xl text-gray-400 line-through mx-3'>{`$ ${prices?.salesPrice}.00`}</small>{' '}
+                </>
               )}
             </p>
 
@@ -238,65 +202,26 @@ const ProductOverviewComponent: FC<ProductOverviewProps> = ({
               {/* Colors */}
 
               {/* Sizes */}
-              <div className='mt-10'>
-                <div className='flex items-center justify-between'>
-                  <h3 className='text-sm font-medium text-gray-900'>Size</h3>
-                  <a
-                    href='#'
-                    className='text-sm font-medium text-indigo-600 hover:text-indigo-500'
-                  >
-                    Size guide
-                  </a>
-                </div>
-
+              <div className='my-10'>
                 <fieldset aria-label='Choose a size' className='mt-4'>
-                  <RadioGroup
-                    value={selectedSize}
-                    onChange={setSelectedSize}
-                    className='grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4'
-                  >
-                    {product.sizes.map((size) => (
-                      <Radio
-                        key={size.name}
-                        value={size}
-                        disabled={!size.inStock}
-                        className={classNames(
-                          size.inStock
-                            ? 'cursor-pointer bg-white text-gray-900 shadow-xs'
-                            : 'cursor-not-allowed bg-gray-50 text-gray-200',
-                          'group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-hidden data-focus:ring-2 data-focus:ring-indigo-500 sm:flex-1 sm:py-6'
-                        )}
-                      >
-                        <span>{size.name}</span>
-                        {size.inStock ? (
-                          <span
-                            aria-hidden='true'
-                            className='pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-checked:border-indigo-500 group-data-focus:border'
-                          />
-                        ) : (
-                          <span
-                            aria-hidden='true'
-                            className='pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200'
-                          >
-                            <svg
-                              stroke='currentColor'
-                              viewBox='0 0 100 100'
-                              preserveAspectRatio='none'
-                              className='absolute inset-0 size-full stroke-2 text-gray-200'
-                            >
-                              <line
-                                x1={0}
-                                x2={100}
-                                y1={100}
-                                y2={0}
-                                vectorEffect='non-scaling-stroke'
+                  <div className='grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4'>
+                    {Array.isArray(productVariantOptions?.options) &&
+                      productVariantOptions.options.map(
+                        (option: IPDPVariantOptionItem) => (
+                          <Link key={option.name} href={option.url}>
+                            <div className='relative w-16 h-16 mb-2'>
+                              <Image
+                                src={option.media.defaultSrc}
+                                alt={option.media.alt || ''}
+                                fill
+                                className='object-cover rounded-md'
+                                sizes='(max-width: 768px) 25vw, 64px'
                               />
-                            </svg>
-                          </span>
-                        )}
-                      </Radio>
-                    ))}
-                  </RadioGroup>
+                            </div>
+                          </Link>
+                        )
+                      )}
+                  </div>
                 </fieldset>
               </div>
 
@@ -307,8 +232,6 @@ const ProductOverviewComponent: FC<ProductOverviewProps> = ({
                 Add to bag
               </button>
             </form>
-
-            {/* end  */}
           </div>
         </div>
       </div>
