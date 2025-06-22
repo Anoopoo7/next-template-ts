@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { Radio, RadioGroup } from '@headlessui/react';
 import Image from 'next/image';
+import { IImageItem, IPrice } from '@/common/lib/types';
 
 const product = {
   name: 'Basic Tee 6-Pack',
@@ -58,7 +59,23 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const ProductOverviewComponent = () => {
+interface ProductOverviewProps {
+  medias: IImageItem[];
+  productName: string;
+  gallery: IImageItem | null;
+  prices?: IPrice;
+  variantName?: string;
+  setGallery: Dispatch<SetStateAction<IImageItem | null>>;
+}
+
+const ProductOverviewComponent: FC<ProductOverviewProps> = ({
+  gallery,
+  medias,
+  productName,
+  prices,
+  variantName,
+  setGallery,
+}) => {
   const [selectedSize, setSelectedSize] = useState(product.sizes[2]);
 
   return (
@@ -97,7 +114,7 @@ const ProductOverviewComponent = () => {
                 aria-current='page'
                 className='font-medium text-gray-500 hover:text-gray-600'
               >
-                {product.name}
+                {product.name} {variantName}
               </a>
             </li>
           </ol>
@@ -109,31 +126,61 @@ const ProductOverviewComponent = () => {
           <div className='lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8'>
             <div>
               {/* Image gallery */}
-              <div className='relative aspect-[1/1] overflow-hidden rounded-lg'>
-                <Image
-                  src={product.images[0].src}
-                  alt={product.images[0].alt}
-                  fill
-                  className='object-cover object-center rounded-lg'
-                  sizes='(max-width: 768px) 100vw, 50vw'
-                />
-              </div>
-
-              <div className='mt-4 grid grid-cols-4 gap-4'>
-                {product.images.slice(1).map((image, index) => (
-                  <div
-                    key={index}
-                    className='relative aspect-[1/1] overflow-hidden rounded-lg'
-                  >
+              {gallery && (
+                <>
+                  {/* Mobile image */}
+                  <div className='relative aspect-[1/1] overflow-hidden rounded-lg block md:hidden'>
                     <Image
-                      src={image.src}
-                      alt={image.alt}
+                      src={gallery.sm || gallery?.defaultSrc}
+                      alt={gallery?.alt || ''}
                       fill
                       className='object-cover object-center rounded-lg'
-                      sizes='(max-width: 768px) 100vw, 25vw'
+                      sizes='100vw'
+                      priority
                     />
                   </div>
-                ))}
+
+                  {/* Tablet image */}
+                  <div className='relative aspect-[1/1] overflow-hidden rounded-lg hidden md:block lg:hidden'>
+                    <Image
+                      src={gallery.md || gallery?.defaultSrc}
+                      alt={gallery?.alt || ''}
+                      fill
+                      className='object-cover object-center rounded-lg'
+                      sizes='100vw'
+                    />
+                  </div>
+
+                  {/* Desktop image */}
+                  <div className='relative aspect-[1/1] overflow-hidden rounded-lg hidden lg:block'>
+                    <Image
+                      src={gallery.lg || gallery?.defaultSrc}
+                      alt={gallery?.alt || ''}
+                      fill
+                      className='object-cover object-center rounded-lg'
+                      sizes='50vw'
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className='mt-4 grid grid-cols-4 gap-4'>
+                {Array.isArray(medias) &&
+                  medias?.map((image, index) => (
+                    <div
+                      key={index}
+                      className='relative aspect-[1/1] overflow-hidden rounded-lg cursor-pointer'
+                      onClick={() => setGallery(image)}
+                    >
+                      <Image
+                        src={image.defaultSrc}
+                        alt={image.alt || ''}
+                        fill
+                        className='object-cover object-center rounded-lg'
+                        sizes='(max-width: 768px) 100vw, 25vw'
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
@@ -141,15 +188,22 @@ const ProductOverviewComponent = () => {
           <div className='mt-4 lg:row-span-3 lg:mt-0'>
             {/* start */}
 
-            <div className='lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8'>
+            <div className='lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8 my-6'>
               <h1 className='text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl'>
-                {product.name}
+                {productName} {variantName}
               </h1>
             </div>
 
             <h2 className='sr-only'>Product information</h2>
             <p className='text-3xl tracking-tight text-gray-900'>
-              {product.price}
+              {prices?.salesPrice === prices?.finalPrice ? (
+              `$ ${prices?.finalPrice}.00`
+              ) : (
+              <>
+                <span className='text-3xl tracking-tight font-bold text-green-900'>{`$ ${prices?.finalPrice}.00`}</span>
+                <small className='text-xl text-gray-400 line-through mx-3'>{`$ ${prices?.salesPrice}.00`}</small>{' '}
+              </>
+              )}
             </p>
 
             {/* Reviews */}
@@ -255,11 +309,6 @@ const ProductOverviewComponent = () => {
             </form>
 
             {/* end  */}
-          </div>
-
-          <div className='py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pt-6 lg:pr-8 lg:pb-16'>
-            {/* Description and details */}
-            <h1>jggu</h1>
           </div>
         </div>
       </div>
