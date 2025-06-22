@@ -93,3 +93,8 @@ export interface IPDPVariant {
   prices: IPrice;
   productType: IProductType;
 }
+
+export interface IModule {
+  resourceId: string;
+  data: string;
+}

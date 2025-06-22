@@ -1,6 +1,8 @@
+import { getModulesByResourceId } from '@/actions/module';
 import { getVariantDetailsByUrl } from '@/actions/variant';
-import { IPDPVariant, IResponse } from '@/common/lib/types';
+import { IModule, IPDPVariant, IResponse } from '@/common/lib/types';
 import Container from '@/common/ui/component/Container';
+import DynamicModule from '@/common/ui/modules';
 import { pageTypes } from '@/utils/constants';
 import { handleServerProps } from '@/utils/serverUtils';
 import ProductOverview from '@/widgets/ProductOverview';
@@ -26,15 +28,24 @@ const ProductDetailsPage = handleServerProps(async (ctx) => {
   const product = variant?.productInfo;
   const price = variant?.prices;
 
+  const modules: IResponse<IModule> = await getModulesByResourceId(
+    variant?.id || ''
+  );
+
   return (
-    <Container>
-      <ProductOverview
-        medias={variant?.medias || []}
-        productName={product?.name || ''}
-        prices={price}
-        variantName={variant?.name}
-      />
-    </Container>
+    <>
+      <Container>
+        <ProductOverview
+          medias={variant?.medias || []}
+          productName={product?.name || ''}
+          prices={price}
+          variantName={variant?.name}
+        />
+      </Container>
+      {modules.success && (
+        <DynamicModule projectData={modules.data?.data || ''} />
+      )}
+    </>
   );
 }, pageTypes.PDP);
 
