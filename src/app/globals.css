@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+
+* {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+  }
+  #iknx{
+    background-image:url('https://via.placeholder.com/1200x400');
+  }
+  .bg-black.bg-opacity-50.p-8.rounded.cmp-i3bel.cmp-iu2w{
+    background-color:#fa0404;
+  }
+  .text-2xl.font-bold.mb-2.cmp-itcxz.cmp-it9l1.cmp-i2brg{
+    color:#767676;
+  }
+  .text-2xl.font-bold.mb-2.cmp-ihswd.cmp-i7tc1{
+    color:#adadad;
+  }
